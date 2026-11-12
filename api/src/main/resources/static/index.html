@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bridge Code | Feed de Projetos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #111111;
+            --text-muted: #6b6b6b;
+            --line: #e6e6e6;
+            --bg-soft: #f9f9f9;
+            --white: #ffffff;
+            --purple: #5b2bd6;
+            --orange: #f0763a;
+            --radius: 14px;
+            --container: 1040px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--ink);
+            background: var(--bg-soft);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        button, input, textarea { font: inherit; }
+        button { cursor: pointer; border: none; background: none; }
+
+        .container {
+            max-width: var(--container);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .header-inner {
+            height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 360px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 9px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: var(--bg-soft);
+            font-size: 0.9rem;
+            transition: border-color .2s, background .2s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            background: var(--white);
+            border-color: var(--purple);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+        }
+
+        .btn-dark {
+            background: var(--ink);
+            color: var(--white);
+        }
+        .btn-dark:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, .14);
+        }
+
+        .btn-purple {
+            background: var(--purple);
+            color: var(--white);
+        }
+        .btn-purple:hover {
+            opacity: 0.92;
+        }
+
+        .feed-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+            padding: 28px 0 60px;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .profile-banner {
+            height: 64px;
+            background: linear-gradient(135deg, var(--purple), var(--orange));
+        }
+
+        .profile-body {
+            padding: 0 18px 20px;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 58px;
+            height: 58px;
+            margin: -29px auto 12px;
+            border-radius: 50%;
+            background: var(--white);
+            border: 2px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,.06);
+        }
+
+        .profile-body h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .profile-body p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .stats-list {
+            border-top: 1px solid var(--line);
+            margin-top: 16px;
+            padding-top: 14px;
+            display: grid;
+            gap: 10px;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+        }
+
+        .stat-row strong {
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        .composer {
+            padding: 18px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .composer-trigger {
+            flex: 1;
+            text-align: left;
+            padding: 12px 16px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            font-weight: 500;
+            transition: background .15s, border-color .15s;
+        }
+
+        .composer-trigger:hover {
+            background: var(--bg-soft);
+            border-color: #cccccc;
+        }
+
+        .feed-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .post-card {
+            padding: 20px;
+        }
+
+        .post-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .post-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge-id {
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #f3eeff;
+            color: var(--purple);
+        }
+
+        .budget-tag {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #0c784e;
+            background: #eaf8f1;
+            padding: 5px 12px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .post-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+            margin-bottom: 6px;
+        }
+
+        .post-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+        }
+
+        .proposals-box {
+            background: var(--bg-soft);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+        }
+
+        .proposals-header {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-bottom: 8px;
+        }
+
+        .proposal-item {
+            padding: 10px 0;
+            border-top: 1px solid var(--line);
+            font-size: 0.9rem;
+        }
+        .proposal-item:first-of-type { border-top: none; padding-top: 2px; }
+        .proposal-item:last-of-type { padding-bottom: 2px; }
+
+        .proposal-head {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .proposal-val { color: var(--purple); }
+        .proposal-msg { color: var(--text-muted); font-size: 0.86rem; }
+
+        .post-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 110px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background .15s, color .15s;
+        }
+
+        .action-btn:hover {
+            background: var(--bg-soft);
+            color: var(--ink);
+        }
+
+        .action-btn.primary {
+            color: var(--purple);
+            background: #f6f2ff;
+        }
+        .action-btn.primary:hover {
+            background: #ece3ff;
+        }
+
+        .action-btn.danger:hover {
+            background: #fff0f0;
+            color: #d93025;
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 17, 17, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .2s ease;
+            z-index: 100;
+        }
+
+        .modal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 28px;
+            width: 100%;
+            max-width: 440px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+        }
+
+        .modal h3 {
+            font-size: 1.25rem;
+            margin-bottom: 4px;
+        }
+
+        .modal .sub {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            margin-bottom: 18px;
+        }
+
+        .field { margin-bottom: 14px; }
+        .field label {
+            display: block;
+            font-size: 0.86rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .field input, .field textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            transition: border-color .2s;
+        }
+
+        .field textarea {
+            resize: vertical;
+            min-height: 84px;
+        }
+
+        .field input:focus, .field textarea:focus {
+            outline: none;
+            border-color: var(--purple);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--text-muted);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--ink);
+            color: var(--white);
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(0,0,0,.18);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity .2s, transform .2s;
+            z-index: 200;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .feed-layout { grid-template-columns: 1fr; }
+            .search-box { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="container header-inner">
+        <div class="brand">
+            <svg width="34" height="26" viewBox="0 0 120 90" fill="none" aria-hidden="true">
+                <defs>
+                    <linearGradient id="bcGrad" x1="0" y1="45" x2="120" y2="45" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#5b2bd6"/>
+                        <stop offset="100%" stop-color="#f0763a"/>
+                    </linearGradient>
+                </defs>
+                <circle cx="60" cy="18" r="9" fill="url(#bcGrad)"/>
+                <path d="M16 74L32 22M104 74L88 22M20 62C42 36 78 36 100 62" stroke="url(#bcGrad)" stroke-width="12" stroke-linecap="round"/>
+            </svg>
+            <span>Bridge Code</span>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Filtrar projetos...">
+        </div>
+
+        <button class="btn btn-dark" id="btnNovoTop">+ Novo Projeto</button>
+    </div>
+</header>
+
+<main class="container feed-layout">
+
+    <aside class="card">
+        <div class="profile-banner"></div>
+        <div class="profile-body">
+            <div class="profile-avatar">
+                <svg width="28" height="22" viewBox="0 0 120 90" fill="none">
+                    <circle cx="60" cy="18" r="9" fill="#5b2bd6"/>
+                    <path d="M16 74L32 22M104 74L88 22M20 62C42 36 78 36 100 62" stroke="#111111" stroke-width="12" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <h2>CodeBridge</h2>
+            <p>Marketplace de devs freelancers &amp; clientes</p>
+
+            <div class="stats-list">
+                <div class="stat-row">
+                    <span>Projetos ativos</span>
+                    <strong id="statProjetos">0</strong>
+                </div>
+                <div class="stat-row">
+                    <span>Propostas enviadas</span>
+                    <strong id="statPropostas">0</strong>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <section>
+        <div class="card composer">
+            <button class="composer-trigger" id="btnComposer">
+                Publicar uma nova demanda de projeto...
+            </button>
+            <button class="btn btn-purple" id="btnComposerBtn">Publicar</button>
+        </div>
+
+        <div class="feed-list" id="feedList">
+            <div class="card empty-state">Carregando projetos...</div>
+        </div>
+    </section>
+
+</main>
+
+<div class="modal" id="projetoModal">
+    <div class="modal-card">
+        <button class="modal-close" data-close="projetoModal">&times;</button>
+        <h3 id="projetoModalTitle">Publicar Projeto</h3>
+        <p class="sub">Preencha os dados do projeto.</p>
+
+        <form id="projetoForm">
+            <input type="hidden" id="projetoId">
+            <div class="field">
+                <label for="titulo">Título do Projeto</label>
+                <input type="text" id="titulo" placeholder="Ex: Landing Page em React" required>
+            </div>
+            <div class="field">
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao" placeholder="Descreva o que precisa ser desenvolvido..." required></textarea>
+            </div>
+            <div class="field">
+                <label for="orcamento">Orçamento (R$)</label>
+                <input type="number" id="orcamento" step="0.01" min="0" placeholder="2000.00" required>
+            </div>
+            <button type="submit" class="btn btn-dark" style="width:100%;">Salvar Projeto</button>
+        </form>
+    </div>
+</div>
+
+<div class="modal" id="propostaModal">
+    <div class="modal-card">
+        <button class="modal-close" data-close="propostaModal">&times;</button>
+        <h3>Enviar Proposta</h3>
+        <p class="sub" id="propostaSub">Projeto #1</p>
+
+        <form id="propostaForm">
+            <input type="hidden" id="propostaProjetoId">
+            <div class="field">
+                <label for="nomeFreelancer">Seu Nome (Freelancer)</label>
+                <input type="text" id="nomeFreelancer" placeholder="Ex: Lucas Silva" required>
+            </div>
+            <div class="field">
+                <label for="valorProposto">Valor Proposto (R$)</label>
+                <input type="number" id="valorProposto" step="0.01" min="0" placeholder="1800.00" required>
+            </div>
+            <div class="field">
+                <label for="mensagem">Mensagem para o Cliente</label>
+                <textarea id="mensagem" placeholder="Explique sua experiência e prazo de entrega..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-purple" style="width:100%;">Enviar Proposta</button>
+        </form>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    const API_URL = 'http://localhost:8080/projetos';
+    let projetosCache = [];
+
+    const feedList = document.getElementById('feedList');
+    const searchInput = document.getElementById('searchInput');
+    const toastEl = document.getElementById('toast');
+
+    function showToast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        setTimeout(() => toastEl.classList.remove('show'), 3000);
+    }
+
+    function formatBRL(valor) {
+        return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    async function carregarProjetos() {
+        try {
+            const res = await fetch(API_URL);
+            if (!res.ok) throw new Error('Erro ao buscar projetos');
+            projetosCache = await res.json();
+            atualizarMetricas();
+            renderizarFeed();
+        } catch (err) {
+            feedList.innerHTML = `
+          <div class="card empty-state">
+            <strong>Não foi possível conectar com o servidor.</strong>
+          </div>
+        `;
+        }
+    }
+
+    function atualizarMetricas() {
+        document.getElementById('statProjetos').textContent = projetosCache.length;
+        const totalPropostas = projetosCache.reduce((acc, p) => acc + (p.propostas ? p.propostas.length : 0), 0);
+        document.getElementById('statPropostas').textContent = totalPropostas;
+    }
+
+    function renderizarFeed() {
+        const termo = searchInput.value.toLowerCase().trim();
+        const filtrados = projetosCache.filter(p =>
+            p.titulo.toLowerCase().includes(termo) ||
+            p.descricao.toLowerCase().includes(termo)
+        );
+
+        if (filtrados.length === 0) {
+            feedList.innerHTML = `<div class="card empty-state">Nenhum projeto encontrado.</div>`;
+            return;
+        }
+
+        feedList.innerHTML = filtrados.map(p => {
+            const propostas = p.propostas || [];
+            const propostasHtml = propostas.length > 0 ? `
+          <div class="proposals-box">
+            <div class="proposals-header">Propostas recebidas (${propostas.length})</div>
+            ${propostas.map(prop => `
+              <div class="proposal-item">
+                <div class="proposal-head">
+                  <span>${escapeHtml(prop.nomeFreelancer)}</span>
+                  <span class="proposal-val">${formatBRL(prop.valorProposto)}</span>
+                </div>
+                <div class="proposal-msg">${escapeHtml(prop.mensagem)}</div>
+              </div>
+            `).join('')}
+          </div>
+        ` : '';
+
+            return `
+          <article class="card post-card">
+            <div class="post-top">
+              <div class="post-meta">
+                <span class="badge-id">Projeto #${p.id}</span>
+              </div>
+              <span class="budget-tag">${formatBRL(p.orcamento)}</span>
+            </div>
+
+            <h3 class="post-title">${escapeHtml(p.titulo)}</h3>
+            <p class="post-desc">${escapeHtml(p.descricao)}</p>
+
+            ${propostasHtml}
+
+            <div class="post-actions">
+              <button class="action-btn primary" onclick="abrirModalProposta(${p.id}, '${escapeAttr(p.titulo)}')">
+                + Enviar Proposta
+              </button>
+              <button class="action-btn" onclick="abrirModalEditar(${p.id})">
+                Editar
+              </button>
+              <button class="action-btn danger" onclick="deletarProjeto(${p.id})">
+                Excluir
+              </button>
+            </div>
+          </article>
+        `;
+        }).join('');
+    }
+
+    document.getElementById('projetoForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('projetoId').value;
+        const payload = {
+            titulo: document.getElementById('titulo').value,
+            descricao: document.getElementById('descricao').value,
+            orcamento: parseFloat(document.getElementById('orcamento').value)
+        };
+
+        const isEdit = Boolean(id);
+        const url = isEdit ? `${API_URL}/${id}` : API_URL;
+        const method = isEdit ? 'PUT' : 'POST';
+
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.mensagem || 'Erro ao salvar');
+            }
+            fecharModal('projetoModal');
+            showToast(isEdit ? 'Projeto atualizado com sucesso' : 'Projeto publicado com sucesso');
+            carregarProjetos();
+        } catch (err) {
+            showToast(err.message);
+        }
+    });
+
+    async function deletarProjeto(id) {
+        if (!confirm(`Deseja realmente excluir o Projeto #${id}?`)) return;
+        try {
+            const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.mensagem || 'Erro ao excluir');
+            }
+            showToast('Projeto removido');
+            carregarProjetos();
+        } catch (err) {
+            showToast(err.message);
+        }
+    }
+
+    document.getElementById('propostaForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const projetoId = document.getElementById('propostaProjetoId').value;
+        const payload = {
+            nomeFreelancer: document.getElementById('nomeFreelancer').value,
+            valorProposto: parseFloat(document.getElementById('valorProposto').value),
+            mensagem: document.getElementById('mensagem').value
+        };
+
+        try {
+            const res = await fetch(`${API_URL}/${projetoId}/propostas`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.mensagem || 'Erro ao enviar proposta');
+            }
+            fecharModal('propostaModal');
+            showToast('Proposta enviada com sucesso');
+            carregarProjetos();
+        } catch (err) {
+            showToast(err.message);
+        }
+    });
+
+    function abrirModalNovo() {
+        document.getElementById('projetoModalTitle').textContent = 'Publicar Projeto';
+        document.getElementById('projetoId').value = '';
+        document.getElementById('projetoForm').reset();
+        document.getElementById('projetoModal').classList.add('open');
+    }
+
+    function abrirModalEditar(id) {
+        const projeto = projetosCache.find(p => p.id === id);
+        if (!projeto) return;
+        document.getElementById('projetoModalTitle').textContent = `Editar Projeto #${id}`;
+        document.getElementById('projetoId').value = projeto.id;
+        document.getElementById('titulo').value = projeto.titulo;
+        document.getElementById('descricao').value = projeto.descricao;
+        document.getElementById('orcamento').value = projeto.orcamento;
+        document.getElementById('projetoModal').classList.add('open');
+    }
+
+    function abrirModalProposta(id, titulo) {
+        document.getElementById('propostaProjetoId').value = id;
+        document.getElementById('propostaSub').textContent = `Projeto #${id} — ${titulo}`;
+        document.getElementById('propostaForm').reset();
+        document.getElementById('propostaModal').classList.add('open');
+    }
+
+    function fecharModal(modalId) {
+        document.getElementById(modalId).classList.remove('open');
+    }
+
+    function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, m => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[m]));
+    }
+
+    function escapeAttr(str) {
+        return String(str).replace(/'/g, "\\'");
+    }
+
+    document.getElementById('btnNovoTop').addEventListener('click', abrirModalNovo);
+    document.getElementById('btnComposer').addEventListener('click', abrirModalNovo);
+    document.getElementById('btnComposerBtn').addEventListener('click', abrirModalNovo);
+    searchInput.addEventListener('input', renderizarFeed);
+
+    document.querySelectorAll('[data-close]').forEach(btn => {
+        btn.addEventListener('click', () => fecharModal(btn.dataset.close));
+    });
+
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.remove('open');
+        });
+    });
+
+    carregarProjetos();
+</script>
+</body>
+</html>
